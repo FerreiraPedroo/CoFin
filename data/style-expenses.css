@@ -1,0 +1,142 @@
+#expense-menu-filter{
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
+    color: blue;
+    user-select: none;
+}
+.input-head {
+    border: 1px solid blue;
+    background-color: white;
+    border-radius: 3px;
+    height: 24px;
+    margin-left: 24px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    user-select: none;
+}
+
+/* --- CABEÇALHO DE LISTA DE DESPESAS --- */
+#expense-head{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    user-select: none;
+}
+#expense-head-id{
+    width: 32px;
+    font-family:'Lucida Sans Unicode';
+    font-weight: bold;    
+    text-align: center;
+    color:white;
+    border:1px solid white;
+    background-color: black;
+    user-select: none;
+}
+#expense-head-date{
+    width: 112px;
+    font-family:'Lucida Sans Unicode';
+    font-weight: bold;    
+    text-align: center;
+    color:white;
+    border:1px solid white;
+    background-color: black;
+    user-select: none;
+}
+#expense-head-dateexpire{
+    width: 124px;
+    font-family:'Lucida Sans Unicode';
+    font-weight: bold;    
+    text-align: center;
+    color:white;
+    border:1px solid white;
+    background-color: black;
+    user-select: none;
+}
+#expense-head-user{
+    width: 256px;
+    font-family:'Lucida Sans Unicode';
+    font-weight: bold;
+    text-align: center;
+    color:white;
+    padding-left: 10px;
+    border:1px solid white;
+    background-color: black;
+    user-select: none;
+}
+#expense-head-category{
+    width: 160px;
+    font-family:'Lucida Sans Unicode';
+    font-weight: bold;
+    text-align: center;
+    color:white;
+    padding-left: 10px;
+    border:1px solid white;
+    background-color:black;
+    user-select: none;
+}
+#expense-head-valor{
+    width: 128px;
+    font-family:'Lucida Sans Unicode';
+    font-weight: bold;
+    color:white;
+    text-align: center;
+    border:1px solid white;
+    background-color: black;
+    user-select: none;
+}
+/* --- LISTA DE DESPESAS --- */
+#expense-list{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+.expense-list-dados {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    
+}
+.expense-id{
+    width: 32px;
+    font-family:'Lucida Sans Unicode';
+    text-align: center;
+    border:1px solid lightgray;
+}
+.expense-date{
+    width: 112px;
+    font-family:'Lucida Sans Unicode';
+    text-align: center;
+    border:1px solid lightgray;
+}
+.expense-dateexpire{
+    width: 124px;
+    font-family:'Lucida Sans Unicode';
+    text-align: center;
+    border:1px solid lightgray;
+}
+.expense-user{
+    width: 256px;
+    font-family:'Lucida Sans Unicode';
+    text-align: left;
+    padding-left: 10px;
+    border:1px solid lightgray;
+}
+.expense-category{
+    width: 160px;
+    font-family:'Lucida Sans Unicode';
+    text-align: left;
+    padding-left: 10px;
+    border:1px solid lightgray;
+}
+.expense-value{
+    width: 128px;
+    font-family:'Lucida Sans Unicode';
+    text-align: right;
+    border:1px solid lightgray;
+}
+
+
+
+

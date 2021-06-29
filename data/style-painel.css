@@ -1,0 +1,337 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  font-family: 'Helvetica';
+  /*border: 1px solid yellow;*/
+}
+html {
+  height: 100%;
+  background-color: darkgray;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+/* ----------------- HEADER ----------------- */
+header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+
+  font-size: 40px;
+  font-weight: bolder;
+  color:white;
+  background-color: black;
+
+  user-select: none;
+}
+#config{
+  margin-left: 15px;
+  margin-right: 15px;
+}
+/* ----------------- BODY ------------------- */
+#body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+/* ----------------- NAV ------------------ */
+nav {
+  display: flex;
+  flex-direction: row;
+  background-color: rgb(51, 50, 50);
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+}
+.nav-button {
+  background-color:transparent;
+  color: white;
+
+  width:200px;
+  height: 32px;
+  border: 0px;
+
+  font-size: 14px;
+  text-align: center;
+}
+.nav-button:hover:enabled {
+  color: black;
+  background-color:lightgray;
+  cursor:pointer;
+}
+.nav-button:hover:disabled {
+  border-bottom: 1px solid gray;
+  border-top: 1px solid gray;
+  cursor:pointer;
+}
+/* ----------------- SECTION ---------------- */
+section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+/*--------------------------------------------*/
+/*------------ CADASTRAR CATEGORIA -----------*/
+#register-category-head {
+  font-size: 20pt;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  user-select: none;
+}
+#register-category-card-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width:100%;
+}
+#register-category-card {
+  width: 440px;
+  margin: 5px 10px 10px 10px;
+  border-radius: 10px;
+  background-color: grey;
+}
+#register-category-card-head{
+  border-radius:8px 8px 0px 0px;
+  background-color: black;
+  height: 22px;
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  padding-top: 4px;
+}
+#register-category-card-keydados {
+  display: flex;
+  flex-direction: row;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+#register-category-card-key-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100px;
+}
+#register-category-card-key {
+  height: 36px;
+  padding: 0px 5px 0px 5px;
+  font-size: 10pt;
+  display: flex;
+  align-items: center;
+}
+#register-category-card-dados-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 340px;
+}
+.register-category-card-dados {
+  width: 95%;
+  height: 24px;
+  border: 0px;
+}
+#register-category-card-foot-client{
+  border-radius:0px 0px 8px 8px;
+  background-color: black;
+  height: 24px;
+  font-size: 12pt;
+  text-align:end;
+  padding-top: 4px;
+}
+#form-button-send{
+  width: 72px;
+  height: 20px;
+  border-radius: 5px;
+  border: 0px;
+  font-size: 10pt;
+  margin-right: 6px;
+}
+#form-button-send:hover {
+  color: blue;
+  cursor:pointer;
+  box-shadow: 0px 0px 0px 1px blue;
+}
+#form-button-send:disabled{
+  color: black;
+  box-shadow: 0px;
+  border: 0px;
+  box-shadow: 0px 0px 0px 0px black;
+  cursor:auto;
+}
+#message-register-error{
+  height: 20px;
+  font-size: small;
+  text-align: center;
+  color:yellow;
+
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+
+  user-select: none;
+}
+
+
+
+/*------------ CADASTRAR CATEGORIA -----------*/
+#register-categoryall-head {
+  font-size: 20pt;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  user-select: none;
+}
+#register-categoryall-card-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width:100%;
+
+}
+#register-categoryall-card {
+  display: flex;
+  flex-direction: row;
+  /*width: 500px;*/
+
+  border-radius: 10px;
+}
+#register-categoryall-card-head{
+  border-radius:8px 0px 0px 8px;
+  background-color: black;
+  height: 100%;
+  width: 10px;
+}
+#register-categoryall-card-keydados {
+  display: flex;
+  flex-direction: row;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+}
+#register-categoryall-card-key-list {
+  display: flex;
+  flex-direction: row;
+}
+#register-categoryall-card-key-cat {
+  height: 20px;
+  font-size: 10pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+}
+#register-categoryall-card-key-id {
+  height: 20px;
+  font-size: 10pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+}
+.register-categoryall-card-dados-id {
+  width: 50px;
+  height: 24px;
+  border: 0px;
+  font-size: 10pt;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: darkgrey;
+
+  margin-right: 10px;
+ }
+.register-categoryall-card-dados-cat {
+  width: 200px;
+  height: 24px;
+  border: 0px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 10px;
+  font-size: 10pt;
+  display: flex;
+  align-items: center;
+  background-color: darkgrey;
+}
+#register-categoryall-card-foot-client{
+  display: flex;
+  justify-content: flex-end;
+  border-radius:0px 8px 8px 0px;
+  background-color: black;
+  width: 90px;
+  height: 24px;
+  font-size: 12pt;
+  text-align:end;
+  padding-top: 4px;
+}
+.register-card-foot-client-save{
+  width: 72px;
+  height: 20px;
+  border-radius: 5px;
+  border: 0px;
+  font-size: 10pt;
+  margin-right: 6px;
+}
+.register-card-foot-client-save:hover {
+  color: blue;
+  cursor:pointer;
+  box-shadow: 0px 0px 0px 1px blue;
+}
+.register-card-foot-client-save:disabled{
+  color: black;
+  box-shadow: 0px;
+  border: 0px;
+  box-shadow: 0px 0px 0px 0px black;
+  cursor:auto;
+}
+.message-category-error{
+  display: flex;
+  align-items: center;
+  height: 24px;
+  font-size: small;
+  text-align: center;
+  color:yellow;
+  user-select: none;
+  margin-left: 10px;
+}
+
+/*----------- expense --------*/
+
+
+.register-card-foot-client-expense{
+  border-radius:0px 0px 8px 8px;
+  background-color: black;
+  height: 24px;
+  font-size: 12pt;
+  text-align:end;
+  padding-top: 4px;
+}
+
+
+
+
+
+/* ----------------- FOOTER ------------------ */
+footer {
+ /* border: 1px solid gray;*/
+
+}
+
+
+
+
+
+
+
+
+
+

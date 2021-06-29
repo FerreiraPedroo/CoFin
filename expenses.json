@@ -1,0 +1,17 @@
+[
+    {
+        "id": 0,
+        "date": "1983-05-30",
+        "user": "Pedro",
+        "category": "-",
+        "value": "9000000.00"
+    },
+    {
+        "id": 1,
+        "date": "27/06/2021",
+        "date-expire": "2001-01-01",
+        "user": "Pedro",
+        "category": "Alimentação",
+        "value": "1500.00"
+    }
+]

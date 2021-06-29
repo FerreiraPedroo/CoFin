@@ -1,0 +1,134 @@
+/* ----------------- register ---------------- */
+#register-head {
+  font-size: 20pt;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  user-select: none;
+}
+#register-card-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width:100%;
+}
+#register-card {
+  width: 440px;
+  border-radius: 8px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  background-color: grey;  
+}
+#register-card-head{
+  border-radius:8px 8px 0px 0px;
+  background-color: black;
+  height: 22px;
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: center;
+  align-items: center;
+  padding-top: 4px;
+}
+#register-card-keydados {
+  display: flex;
+  flex-direction: row;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+#register-card-key-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 150px;
+}
+.register-card-key {
+  height: 36px;
+  padding: 0px 5px 0px 5px;
+  font-size: 10pt;
+  display: flex;
+  align-items: center;
+}
+#register-card-dados-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 400px;
+}
+.register-card-dados {
+  border: 0px;
+  width: 95%;
+  height: 24px;
+}
+.register-card-foot-client{
+  border-radius:0px 0px 8px 8px;
+  background-color: black;
+  height: 24px;
+  font-size: 12pt;
+  text-align:end;
+  padding-top: 4px;
+}
+.register-card-foot-client-save{
+  width: 64px;
+  height: 20px;
+  border-radius: 5px;
+  border: 0px;
+  font-size: 10pt;
+  margin-right: 6px;
+}
+.register-card-foot-client-save:hover {
+  color: blue;
+  cursor:pointer;
+  box-shadow: 0px 0px 0px 1px blue;
+}
+.register-card-foot-client-save:disabled{
+  color: black;
+  box-shadow: 0px;
+  border: 0px;
+  box-shadow: 0px 0px 0px 0px black;
+  cursor:auto;
+}
+#register-message-error{
+  height: 20px;
+  font-size: small;
+  text-align: center;
+  color:yellow;
+
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+
+  user-select: none;
+}
+/* ----------------- FOOTER ------------------ */
+footer {
+  /*border: 1px solid gray;*/
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

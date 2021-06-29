@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./data/style-index.css">
+    <link rel="stylesheet" type="text/css" href="./data/style-newuser.css">
+    <link rel="shortcut icon" href="./data/img/favicon.png" type="image/x-png">
+    <script src="./data/script.js"></script>
+    <title>CoFin</title>
+</head>
+
+<body>
+    <header>
+        <span>CoFin</span>
+    </header>
+    <main>
+        <div id="center">
+            <div id="center-text-login">LOGIN</div>
+            <div id="center-form">
+                <form id="form">
+                    <input class="form-input" id="form-input-user" type="text" name="user" placeholder="usuário"><br>
+                    <input class="form-input" id="form-input-password" type="password" name="password" placeholder="senha">
+                    <div class="section-card-message" id="message-error">&nbsp;</div>
+                    <input id="form-button-send" type="button" value="ENTRAR" onclick="userLogin()"><br>
+                    <div id="register-link" onclick="newUserPage()">REGISTRAR</a></div>
+                </form>
+            </div><br>
+        </div>
+    </main>
+    <footer></footer>
+</body>
+</html>
