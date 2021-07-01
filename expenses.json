@@ -1,17 +1,29 @@
 [
     {
-        "id": 0,
-        "date": "1983-05-30",
-        "user": "Pedro",
-        "category": "-",
-        "value": "9000000.00"
+        "id": 1,
+        "date": "30/06/2021",
+        "date_expire": "1983-05-30",
+        "user_id": 1,
+        "category_id": 4,
+        "value": 7500.00,
+        "deleted":false
     },
     {
-        "id": 1,
-        "date": "27/06/2021",
-        "date-expire": "2001-01-01",
-        "user": "Pedro",
-        "category": "Alimentação",
-        "value": "1500.00"
+        "id": 2,
+        "date": "30/06/2021",
+        "date_expire": "1983-05-30",
+        "user_id": 1,
+        "category_id": 2,
+        "value": 3000,
+        "deleted": false
+    },
+    {
+        "id": 3,
+        "date": "30/06/2021",
+        "date_expire": "1983-05-30",
+        "user_id": 1,
+        "category_id": 2,
+        "value": 3000,
+        "deleted": false
     }
 ]

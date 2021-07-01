@@ -2,26 +2,25 @@
     {
         "category": "Alimentação",
         "id": 1,
-        "user_id": 0
+        "user_id": 0,
+        "deleted": false
     },
     {
         "category": "Educação",
         "id": 2,
-        "user_id": 0
+        "user_id": 0,
+        "deleted": false
     },
     {
         "category": "Lazer",
         "id": 3,
-        "user_id": 1
+        "user_id": 0,
+        "deleted": false
     },
     {
         "category": "Entretenimento",
         "id": 4,
-        "user_id": 1
-    },
-    {
-        "category": "Hobby",
-        "id": 5,
-        "user_id": 2
+        "user_id": 0,
+        "deleted": false
     }
 ]
