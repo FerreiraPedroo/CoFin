@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel de controle de despesas CoFin" />
+  <link rel="shortcut icon" href="./data/img/favicon.png" type="image/x-png">
+  <link rel="stylesheet" type="text/css" href="./data/style-index.css">
+  <link rel="stylesheet" type="text/css" href="./data/style-painel.css">
+  <link rel="stylesheet" type="text/css" href="./data/style-newuser.css">
+  <link rel="stylesheet" type="text/css" href="./data/style-expenses.css">
+  <script src="./data/script.js"></script>
+
+  <title>Cofin - Painel</title>
+</head>
+<body>
+  <header>
+    <span>CoFin</span>
+    <div id="config"><img src="./data/img/config.jpg" alt="Configurações" onclick="updateUserPage()"></div>
+  </header>
+
+  <div id="body">
+
+    <nav>
+      <input type="button" class="nav-button" value="CADASTRAR DESPESAS" onclick="newExpensePage()">
+      <input type="button" class="nav-button" value="CONSULTAR DESPESAS" onclick="allExpensePage()">
+      <input type="button" class="nav-button" value="CADASTRAR CATEGORIA" onclick="newCategoryPage()">
+      <input type="button" class="nav-button" value="CONSULTAR CATEGORIAS" onclick="allCategoryPage()">
+    </nav>
+
+    <section id="section">
+     
+    </section>
+
+  </div>
+
+</body>
+
+</html>
