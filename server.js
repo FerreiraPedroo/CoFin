@@ -1,11 +1,12 @@
 // CARREGA O MODULO 'express' E EXECUTA.
-const { response } = require('express');
+const { Console } = require('console');
 const express = require('express');
 const app = express();
 
 // CARREGA O MODULO 'fs' PARA TRATAMENDO DE ARQUIVOS
 const fs = require('fs');
-const { resolve } = require('path');
+const { parse } = require('path');
+
 
 // CONFIGURAÇÃO DO EXPRESS
 app.use(express.json());
@@ -50,7 +51,7 @@ function writeFile(_dir, _file, _data) {
     return new Promise((resolve, reject) => {
         fs.writeFile(_dir + _file, _data, (err) => {
             if (err) {
-                reject();
+                reject(err);
             } else {
                 resolve();
 
@@ -81,45 +82,165 @@ function writeLog(_dir, _file, _data) {
     })
 }
 
-async function loginVerific(_user) {
-    console.log("| Verificação de login")
+/*
+    Verifica se o usuário está "logado".
+    Verifica a ultima vez que o usuário intaragiu com a página.
+    Se a ultima vez que o usuário interagiu com a página for maior que 1h ele pede o login novamente.
+*/
+function userCheck(_user, _type = 'check') {
     let userVerific = _user;
-    return new Promise((resolve, reject) => {
-        fs.readFile('loged.json', 'utf-8', (err, data) => {
-            if (err) {
-                console.log("| ERRO INTERNO - FIM                      |");
-                reject(false);
-            } else {
-                console.log("| ReadFile: 'loged.json' - OK");
-                let usersLoged = JSON.parse(data);
-                let userLoginCheck = 0;
+    let typeVerific = _type;
+
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            let usersLoged = await readFile(PATH_DIR, 'loged.json');
+            let userLoginChecked;
+            let userLoginCheckPosition = 0;
+
+            if (typeVerific == 'check') {
+                console.log("| Checando usuário logado");
+                console.log("| Usuario a ser checado : ", userVerific);
 
                 for (l of usersLoged) {
-                    if (l.user == userVerific) {
+                    if (l.id == userVerific) {
                         if (parseInt((Date.now() - parseInt(l.time)) / 1000) <= 3600) {
-                            console.log("| Ultima verificação: " + ((Date.now() - parseInt(l.time)) / 1000) + " segundos");
-                            console.log("| Usuário logado verificado: " + JSON.stringify(l));
-                            resolve(true)
+                            
+                            for (u in usersLoged) {
+                                if (usersLoged[u].id == userVerific) {
+                                    console.log("| Usuário logado encontrado: ", l)
+                                    console.log("| Ultima verificação: ", ((Date.now() - parseInt(l.time)) / 1000),"segundos");
+                                    usersLoged[u].key = (Math.random() * 9999999) + ((Math.random() * 9) + 10000000);
+                                    usersLoged[u].time = Date.now();
+                                    userLoginChecked = usersLoged[u];
+                                    break;
+                                }
+                            }
                             break;
+
                         } else {
-                            console.log("| Usuário com o login expirado por inatividade longa - FIM     |");
+                            console.log("| Usuário com o login expirado por inatividade longa - FIM");
                             reject(false)
                             break;
                         }
                     }
-                    userLoginCheck++;
+                    userLoginCheckPosition++;
                 }
-                if (usersLoged.length == userLoginCheck) {
+
+                if (usersLoged.length == userLoginCheckPosition) {
                     console.log("| Usuário não logado anteriormente");
                     reject(false)
 
+                } else if (userLoginChecked != undefined){
+                    writeFile(PATH_DIR, 'loged.json', JSON.stringify(usersLoged))
+                        .then(() => {
+                            console.log("| Atualizando KEY:  ", userLoginChecked.key);
+                            console.log("| Atualizando TIME: ", userLoginChecked.time);
+                            resolve(userLoginChecked)
+                        })
+                        .catch((_err) => {
+                            console.log("| ERRO AO GRAVAR O REGISTRO: ", _err);
+                            reject(false)
+                        })
+                }
+
+            } else if (typeVerific == 'login') {
+                console.log("| Registrando login");
+                console.log("| Usuario para registrar ID: " + userVerific );
+
+                for (l of usersLoged) {
+                    if (l.id == userVerific) {
+                        console.log("| Ultimo login: " + ((Date.now() - parseInt(l.time)) / 1000) + " segundos");
+                        for (u in usersLoged) {
+                            if (usersLoged[u].id == userVerific) {
+                                usersLoged[u].key = (Math.random() * 9999999) + ((Math.random() * 9) + 10000000);
+                                usersLoged[u].time = Date.now();
+                                userLoginChecked = usersLoged[u];
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    userLoginCheckPosition++;
+                }
+
+                if (usersLoged.length == userLoginCheckPosition) {
+                    usersLoged.push({"id":userVerific,"key":(Math.random() * 9999999) + ((Math.random() * 9) + 10000000),"time":Date.now()})
+                    console.log("| Usuário não registrado anteriormente");
+
+                    await writeFile(PATH_DIR, 'loged.json', JSON.stringify(usersLoged))
+                        .then(() => {
+                            console.log("| Atualizando KEY: " + usersLoged[usersLoged.length -1].key);
+                            console.log("| Atualizando TIME: " + usersLoged[usersLoged.length -1].time);
+                            resolve(usersLoged[usersLoged.length -1])
+                        })
+                        .catch((_err) => {
+                            console.log("| ERRO: " + _err);
+                            reject(false)
+                        })
+                    reject(false)
+
+                } else {
+                    await writeFile(PATH_DIR, 'loged.json', JSON.stringify(usersLoged))
+                        .then(() => {
+                            console.log("| Atualizando KEY: " + userLoginChecked.key);
+                            console.log("| Atualizando TIME: " + userLoginChecked.time);
+                            resolve(userLoginChecked)
+                        })
+                        .catch((_err) => {
+                            console.log("| 2 ERRO: " + _err);
+                            reject(false)
+                        })
+                }
+
+            }
+        } catch (error) {
+            console.log("ERRO NO ULTIMO")
+            console.log(error)
+            reject(false)
+        }
+
+    })
+}
+
+function userPasswordCheck(_user) {
+    console.log("| Validação do login")
+    return new Promise((resolve, reject) => {
+        fs.readFile('users.json', 'utf-8', (err, data) => {
+            if (err) {
+                console.log("| ReadFile erro: 'users.json'");
+                reject(false);
+            } else {
+                console.log("| ReadFile: 'users.json' - OK");
+                let userListJSONPosition = 0;
+                userListJSON = JSON.parse(data);
+                for (u of userListJSON) {
+                    if (u.user == _user.user && _user.user != "" && u.password == _user.password) {
+                        console.log("| Usuário encontrado - OK: "+ JSON.stringify(u));
+                        delete u.password;
+                        delete u.email;
+                        delete u.phone;
+                        resolve(u);
+                        break;
+                    }
+                    userListJSONPosition++;
+                }
+                if (userListJSONPosition == userListJSON.length) {
+                    console.log("| Usuario não encotrado")
+                    reject(false)
                 }
             }
         })
     })
 }
 
+function getElementById(_id,_type){
+    let element;
 
+    if(_type == "user"){};
+
+
+}
 
 
 
@@ -350,104 +471,43 @@ app.delete('/delete/:type/:id', function (req, res) {
 
 
 
-// LOGIN DO USUÁRIO - OK - 30/06
-app.post('/login', function (req, res) {
-    let autentication = req.body
-    const loginAutentication = new Promise((resolve, reject) => {
+// LOGIN DO USUÁRIO - OK - 04/07
+app.post('/login', async function (req, res) {
+    let autentication = req.body;
+    let loginValidate = -1;
+    let registerLogedUser = -1;
 
-        console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
-        console.log("| SOLICITAÇÃO DE LOGIN                        |");
-        console.log("| Usuario a logar: " + JSON.stringify(autentication));
+    console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
+    console.log("| SOLICITAÇÃO DE LOGIN                        |");
+    console.log("| Usuario a logar: ", autentication);
 
-        fs.readFile('users.json', 'utf-8', (err, data) => {
-            if (err) {
-                fs.appendFile('log.txt', `${new Date().toLocaleString()} > ROUTE:/login > METHOD:POST > LOGIN USER > READ FILE:'users.json' > ERRO CODE: ${err.code}${'\n'}`, (err) => {
-                    err ? console.log(`| ${new Date().toLocaleString()} > ROUTE:/login > METHOD:POST > READ FILE:'log.txt' > ERRO:${err.code}`) : "";
-                })
-                console.log("| ReadFile erro: 'users.json'");
-                reject();
-            } else {
-                console.log("| ReadFile: 'users.json' - OK");
-                let userListJSONPosition = 0;
-                userListJSON = JSON.parse(data);
-                for (u of userListJSON) {
-                    if (u.user == autentication.user && autentication.user != "" && u.password == autentication.password) {
-                        console.log("| Usuário encontrado: " + JSON.stringify(u));
-                        resolve(u);
-                        break;
-                    }
-                    userListJSONPosition++;
-                }
-                if (userListJSONPosition == userListJSON.length) {
-                    console.log("| Usuario não encotrado")
-                    reject()
-                }
-            }
-        })
-    });
+    try {
+        loginValidate = await userPasswordCheck(autentication);
+        console.log("| Usuário validado : ", loginValidate);
+        registerLogedUser = await userCheck(loginValidate.id, 'login');
+        console.log("| Usuário registrado : ", registerLogedUser);
+    } catch (error) {
+        console.log("| Erro: Erro ao efetuar o login");
 
-    loginAutentication
-        .then((_data) => {
-            let userAutentication = _data;
+    }
 
-            fs.readFile('loged.json', 'utf-8', (err, data) => {
-                if (err) {
-                    console.log("| USUARIO NÃO EFETUOU LOGIN - FIM         |");
-                    console.log("|_________________________________________|");
-                    fs.appendFile('log.txt', `${new Date().toLocaleString()} > ROUTE:/login > METHOD:POST > LOGIN USER > READ FILE:'users.json' -> ERRO CODE: ${err.code}${'\n'}`, (err) => {
-                        err ? console.log(`| ${new Date().toLocaleString()} > ROUTE:/login > METHOD:POST > READ FILE:'log.txt' > ERRO:${err.code}`) : "";
-                    })
-                    res.status(500).send(`{"LOGIN":"ERRO AO FAZER LOGIN"}`);
+    if(typeof loginValidate == 'object'  && typeof registerLogedUser == 'object'){
+        console.log("| Login realizado com sucesso");
+        console.log("| USUÁRIO LOGADO - FIM                    |");
+        console.log("|_________________________________________|");
+        res.send(JSON.stringify(registerLogedUser));
 
-                } else {
-                    console.log("| ReadFile: 'loged.json' - OK");
-                    let usersLoged = JSON.parse(data);
-                    let userLoginCheck = 0;
+    }else{
+        console.log("| USUARIO NÃO EFETUOU LOGIN - FIM         |");
+        console.log("|_________________________________________|");
+        res.status(500).send(`{"LOGIN":"ERRO AO FAZER LOGIN"}`);
+    }
 
-                    for (l of usersLoged) {
-                        if (l.user == userAutentication.user) {
-                            console.log("| Usuário já logado: " + JSON.stringify(l));
-                            console.log("| USUÁRIO LOGADO - FIM                        |");
-                            console.log("|_____________________________________________|");
-                            res.send(JSON.stringify(l));
-                            break;
-                        }
-                        userLoginCheck++
-                    }
-
-                    if (usersLoged.length == userLoginCheck) {
-                        console.log("| Usuário não logado anteriormente");
-                        let userAutenticationOK = JSON.parse(`{"user":"${userAutentication.user}","key":"${(Math.random() * 9999999) + ((Math.random() * 9) + 10000000)}"}`);
-                        userAutenticationOK.time = Date.now();
-                        usersLoged.push(userAutenticationOK);
-
-                        fs.writeFile('loged.json', JSON.stringify(usersLoged), (err) => {
-                            if (err) {
-                                fs.appendFile('log.txt', `${new Date().toLocaleString()} > ROUTE:/login > METHOD:POST > LOGIN USER > READ FILE:'loged.json' > ERRO CODE: ${err.code}${'\n'}`, (err) => {
-                                    err ? console.log(`| ${new Date().toLocaleString()} > ROUTE:/login > METHOD:POST > READ FILE:'log.txt' > ERRO:${err.code}`) : "";
-                                })
-                                console.log("| WriteFile: ERRO: " + err);
-                                console.log("| USUARIO NÃO LOGADO - FIM                    |");
-                                console.log("|_____________________________________________|");
-                                reject();
-
-                            } else {
-                                console.log("| Usuário logado com sucesso");
-                                console.log("| USUÁRIO LOGADO - FIM                        |");
-                                console.log("|_____________________________________________|");
-                                res.send(JSON.stringify(usersLoged));
-                            }
-                        })
-                    }
-                }
-            })
-        })
-        .catch(() => {
-            console.log("| USUARIO NÃO LOGADO - FIM                    |");
-            console.log("¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨");
-            res.status(500).json({ "LOGIN": "ERRO NO LOGIN" });
-        })
 })
+
+
+
+
 // REGISTRANDO USUÁRIOS - OK - 30/06
 app.post('/register/user', function (req, res) {
     let userRegister = req.body;
@@ -512,21 +572,22 @@ app.post('/register/user', function (req, res) {
         res.status(500).send(`{"register":"NÃO REGISTRADO - ERRO INTERNO"}`);
     })
 })
-// EXIBINDO TODAS DESPESAS - OK - 30-06
+// EXIBINDO TODAS DESPESAS - OK - 04-07
 app.get('/query/expenses/user/:id', async function (req, res) {
     let userId = req.params.id;
-    let valid = false;
+    let userCheckDados = false;
     console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
     console.log("| SOLICITAÇÃO DE DADOS                    |");
     console.log("| Solicitação expenses: Usuário: " + userId);
 
-    try{
-    valid = await loginVerific("ph");
-    }catch(_err){
-        console.log(_err);
+    try {
+        userCheckDados = await userCheck(userId);
+        console.log(userCheckDados)
+    } catch (_err) {
+        console.log("| ERRO: ERRO INTERNO");
     }
 
-    if (valid) {
+    if (userCheckDados) {
         readFile(PATH_DIR, `expenses.json`)
             .then((_data) => {
                 let dados = _data.filter((expense) => {
@@ -536,7 +597,8 @@ app.get('/query/expenses/user/:id', async function (req, res) {
                 })
                 console.log("| SOLICITAÇÃO ENVIADA - FIM               |");
                 console.log("|_________________________________________|");
-                res.send(dados);
+                
+                res.send(`[${JSON.stringify(userCheckDados)},${JSON.stringify(dados)}]`);
             })
             .catch((_err) => {
                 console.log("| ReadFile: ERRO: " + _err)
@@ -548,7 +610,7 @@ app.get('/query/expenses/user/:id', async function (req, res) {
     } else {
         console.log("| ERRO - FIM                              |");
         console.log("|_________________________________________|");
-        res.status(500).send('{"CONSULTA":"LISTA_NÃO_DISPONIVEL_ERRO_INTERNO"}');
+        res.status(500).send('{"CONSULTA":"LISTA NÃO DISPONIVEL ERRO INTERNO"}');
     }
 
 
@@ -647,94 +709,107 @@ app.post('/register/expense', function (req, res) {
     })
 })
 // CADASTRANDO CATEGORIAS - OK - 30-06
-app.post('/register/category', function (req, res) {
+app.post('/register/category', async function (req, res) {
     let categoryRegister = req.body;
+    let valid = false;
     console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
     console.log("| SOLICITAÇÃO DE REGISTRO                 |");
     console.log("| Dados para registrar : " + JSON.stringify(categoryRegister));
-    new Promise((resolve, reject) => {
-        console.log("| Promise Iniciada");
-        readFile(PATH_DIR, "categories.json")
-            .then((_data) => {
-                console.log("| Total de registros : " + _data.length);
-                categoriesList = _data;
-                let categoriesListPosition = 0;
 
-                for (u of categoriesList) {
-                    if (categoryRegister.category != "" && u.category == categoryRegister.category && u.user == categoryRegister.user && u.deleted == false) {
-                        console.log("| Categoria já registrada : " + u.category);
-                        reject("CATEGORIA JA REGISTRADA");
-                        break;
-                    } else if (categoryRegister.category != "" && u.category == categoryRegister.category && u.user == categoryRegister.user && u.deleted == true) {
-                        console.log("| Categoria deletada : " + u.category);
-                        categoriesList[categoriesList.length - 1] == undefined ? categoryRegister.id = 1 : categoryRegister.id = categoriesList[categoriesList.length - 1].id + 1;
-                        categoriesList.push(categoryRegister);
-                        console.log("| Registro a reativar: " + JSON.stringify(categoryRegister));
-                        resolve(categoriesList);
-                        break;
-                    }
-                    categoriesListPosition++;
-                }
-
-                if (categoriesListPosition == categoriesList.length) {
-                    console.log("| Registro ativo não encontrado");
-                    categoriesList[categoriesList.length - 1] == undefined ? categoryRegister.id = 1 : categoryRegister.id = categoriesList[categoriesList.length - 1].id + 1;
-                    categoriesList.push(categoryRegister);
-                    console.log("| Registro: " + JSON.stringify(categoryRegister));
-                    resolve(categoriesList);
-                }
-
-            })
-            .catch((_err) => {
-                console.log("| ReadFile: ERRO: " + _err)
-                console.log("| NÃO REGISTRADO - FIM                    |");
-                console.log("|_________________________________________|");
-                res.status(500).send(`{"register":"${_err}"}`);
-            })
-    }).then((_data) => {
-        let dados = _data
-        writeFile(PATH_DIR, "categories.json", JSON.stringify(dados))
-            .then(() => {
-                console.log("| Registro realizado com sucesso");
-                console.log("| REGISTRADO - FIM                        |");
-                console.log("|_________________________________________|");
-                res.send('{"register":"REGISTRADO COM SUCESSO"}')
-            })
-            .catch(() => {
-                console.log("| WriteFile: ERRO: " + err.message);
-                console.log("| Não foi possivel efetuar o registro");
-                console.log("| NÃO REGISTRADO - FIM                    |");
-                console.log("|_________________________________________|");
-                res.status(500).send(`{"register":"NÃO REGISTRADO - ERRO INTERNO"}`);
-            })
-    }).catch((_err) => {
-        console.log("| WriteFile: ERRO: " + _err);
-        console.log("| Não foi possivel efetuar o registro");
-        console.log("| NÃO REGISTRADO - FIM                    |");
-        console.log("|_________________________________________|");
-        res.status(500).send(`{"register":"NÃO REGISTRADO - ERRO INTERNO"}`);
-    })
-})
-// ENVIANDO TODAS AS CATEGORIAS - OK - 30-06
-app.get('/query/categories/user/:id', async function (req, res) {
-        let userId = req.params.id
-        let valid;
-        console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
-        console.log("| SOLICITAÇÃO DE DADOS                    |");
-        console.log("| Categorias usuário id: " + userId);
-        await loginVerific("ph")
-        .then(() => {
-            console.log("| Usuário verificado: OK")
-            valid = true
-        })
-        .catch(() => {
-            console.log("| Usuário verificado: ERRO")
-            valid = false
-        });
-
+    try {
+        valid = await userCheck(categoryRegister.user_id,'check');
+    } catch (_err) {
+        console.log("| ERRO: ERRO INTERNO");
+    }
 
     if (valid) {
+        new Promise((resolve, reject) => {
+            console.log("| Promise Iniciada");
+            readFile(PATH_DIR, "categories.json")
+                .then((_data) => {
+                    console.log("| Total de registros : " + _data.length);
+                    categoriesList = _data;
+                    let categoriesListPosition = 0;
 
+                    for (u of categoriesList) {
+                        if (categoryRegister.category != "" && u.category == categoryRegister.category && u.user == categoryRegister.user && u.deleted == false) {
+                            console.log("| Categoria já registrada : " + u.category);
+                            reject("CATEGORIA JA REGISTRADA");
+                            break;
+                        } else if (categoryRegister.category != "" && u.category == categoryRegister.category && u.user == categoryRegister.user && u.deleted == true) {
+                            console.log("| Categoria deletada : " + u.category);
+                            categoriesList[categoriesList.length - 1] == undefined ? categoryRegister.id = 1 : categoryRegister.id = categoriesList[categoriesList.length - 1].id + 1;
+                            categoriesList.push(categoryRegister);
+                            console.log("| Registro a reativar: " + JSON.stringify(categoryRegister));
+                            resolve(categoriesList);
+                            break;
+                        }
+                        categoriesListPosition++;
+                    }
+
+                    if (categoriesListPosition == categoriesList.length) {
+                        console.log("| Registro ativo não encontrado");
+                        categoriesList[categoriesList.length - 1] == undefined ? categoryRegister.id = 1 : categoryRegister.id = categoriesList[categoriesList.length - 1].id + 1;
+                        categoriesList.push(categoryRegister);
+                        console.log("| Registro: " + JSON.stringify(categoryRegister));
+                        resolve(categoriesList);
+                    }
+
+                })
+                .catch((_err) => {
+                    console.log("| ReadFile: ERRO: " + _err)
+                    console.log("| NÃO REGISTRADO - FIM                    |");
+                    console.log("|_________________________________________|");
+                    res.status(500).send(`{"register":"${_err}"}`);
+                })
+        }).then((_data) => {
+            let dados = _data
+            writeFile(PATH_DIR, "categories.json", JSON.stringify(dados))
+                .then(() => {
+                    console.log("| Registro realizado com sucesso");
+                    console.log("| REGISTRADO - FIM                        |");
+                    console.log("|_________________________________________|");
+                    res.send('{"register":"REGISTRADO COM SUCESSO"}')
+                })
+                .catch(() => {
+                    console.log("| WriteFile: ERRO: " + err.message);
+                    console.log("| Não foi possivel efetuar o registro");
+                    console.log("| NÃO REGISTRADO - FIM                    |");
+                    console.log("|_________________________________________|");
+                    res.status(500).send(`{"register":"NÃO REGISTRADO - ERRO INTERNO"}`);
+                })
+        }).catch((_err) => {
+            console.log("| WriteFile: ERRO: " + _err);
+            console.log("| Não foi possivel efetuar o registro");
+            console.log("| NÃO REGISTRADO - FIM                    |");
+            console.log("|_________________________________________|");
+            res.status(500).send(`{"register":"NÃO REGISTRADO - ERRO INTERNO"}`);
+        })
+    } else {
+        console.log("| ERRO - FIM                              |");
+        console.log("|_________________________________________|");
+        res.status(500).send('{"CONSULTA":"LISTA NÃO DISPONIVEL ERRO INTERNO"}');
+    }
+
+
+
+})
+// ENVIANDO TODAS AS CATEGORIAS - OK - 04-07
+app.get('/query/categories/user/:id', async function (req, res) {
+    let userId = req.params.id
+    let userCheckDados = false;
+    console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
+    console.log("| SOLICITAÇÃO DE DADOS                    |");
+    console.log("| Categorias usuário id: " + userId);
+
+    try {
+        userCheckDados = await userCheck(userId);
+    } catch (_err) {
+        console.log("| ERRO: ERRO INTERNO");
+    }
+
+
+    if (userCheckDados) {
         readFile(PATH_DIR, `categories.json`)
             .then((_data) => {
                 let dados = _data.filter((category) => {
@@ -742,9 +817,11 @@ app.get('/query/categories/user/:id', async function (req, res) {
                         return category;
                     }
                 })
+                console.log("| Categorias: "+ JSON.stringify(dados))
+                console.log("| Categorias selecionadas                 |");               
                 console.log("| SOLICITAÇÃO ENVIADA - FIM               |");
                 console.log("|_________________________________________|");
-                res.send(dados);
+                res.send(`[${JSON.stringify(userCheckDados)},${JSON.stringify(dados)}]`);
             })
             .catch((_err) => {
                 console.log("| ReadFile: ERRO: " + _err)
@@ -753,7 +830,7 @@ app.get('/query/categories/user/:id', async function (req, res) {
                 res.status(500).send('{"CONSULTA":"LISTA_NÃO_DISPONIVEL_ERRO_INTERNO"}');
             })
     } else {
-        console.log("| ERRO - FIM                              |");
+        console.log("| ERRO NA SOLICITAÇÃO DE DADOS - FIM      |");
         console.log("|_________________________________________|");
         res.status(500).send('{"CONSULTA":"LISTA_NÃO_DISPONIVEL_ERRO_INTERNO"}');
     }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        th,
+        td {
+
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        th:first-child,
+        td:first-child {
+           text-align: left;
+        }
+        th:nth-child(2),th:nth-child(3),
+        td:nth-child(2),td:nth-child(3){
+            text-align: center;
+            width: 10%;
+        }
+        th:nth-child(4),
+        td:nth-child(4){
+            text-align: left;
+        }
+        th:nth-child(5),
+        td:nth-child(5){
+            text-align: center;
+            width: 10%;
+        }
+        th:last-child,
+        td:last-child {
+            width: 15%;
+           text-align: right;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <header>LISTA DE DESPESAS</header>
+        <nav>
+            <div>PESQUISAR</div>
+            <div>CLASSIFICAR</div>
+        </nav>
+        <div>TITULO</div>
+        <div id="expense-list">
+            <table>
+                <tr>
+                    <th id="table-id">ID</th>
+                    <th id="table-date">LANÇAMENTO</th>
+                    <th id="table-date_expire">VENCIMENTO</th>
+                    <th id="table-description">DESCRIÇÃO</th>
+                    <th id="table-category">CATEGORIA</th>
+                    <th id="table-value">VALOR</th>
+                </tr>
+                <tr>
+                    <td id="table-id-0">01</td>
+                    <td id="table-date-0">03/07/2021</td>
+                    <td id="table-date_expire-0">09/07/2021</td>
+                    <td id="table-description-0">Pagamento de cartão de crédito</td>
+                    <td id="table-category-0">Entretenimento</td>
+                    <td id="table-value-0">R$ 600.00</td>
+                </tr>
+                <tr>
+                    <td id="table-id-0">01</td>
+                    <td id="table-date-0">03/07/2021</td>
+                    <td id="table-date_expire-0">09/07/2021</td>
+                    <td id="table-description-0">Pagamento de cartão de crédito</td>
+                    <td id="table-category-0">Entretenimento</td>
+                    <td id="table-value-0">R$ 600.00</td>
+                </tr>
+                <tr>
+                    <td id="table-id-0">01</td>
+                    <td id="table-date-0">03/07/2021</td>
+                    <td id="table-date_expire-0">09/07/2021</td>
+                    <td id="table-description-0">Pagamento de cartão de crédito</td>
+                    <td id="table-category-0">Entretenimento</td>
+                    <td id="table-value-0">R$ 600.00</td>
+                </tr>
+
+            </table>
+
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

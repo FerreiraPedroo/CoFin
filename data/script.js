@@ -243,7 +243,7 @@ function userLogin() {
     console.log(jsonLogin)
     userLogin.setAttribute("disabled", "disabled");
     passwordLogin.setAttribute("disabled", "disbled");
-    buttonLogin.setAttribute("disabled", "disbled");
+    //buttonLogin.setAttribute("disabled", "disbled");
     errorMessageLogin.innerHTML = `&nbsp`;
 
     xhttpLogin = new XMLHttpRequest();
@@ -253,17 +253,17 @@ function userLogin() {
         if (xhttpLogin.readyState == 4 && xhttpLogin.status == 200) {
             let xhttpLoginMessageText = JSON.parse(xhttpLogin.responseText);
             console.log(xhttpLoginMessageText);
-            sessionStorage.setItem("user", xhttpLoginMessageText.user);
+            sessionStorage.setItem("id", xhttpLoginMessageText.id);
             sessionStorage.setItem("key", xhttpLoginMessageText.key);
             sessionStorage.setItem("time", xhttpLoginMessageText.time);
             console.log(sessionStorage)
             console.log(sessionStorage.getItem("key"))
-            location.replace('http://127.0.0.1:3000/painel.html')
+            //location.replace('/painel.html')
 
         } else if (xhttpLogin.readyState == 4 && xhttpLogin.status >= 300) {
             userLogin.removeAttribute("disabled", "disabled");
             passwordLogin.removeAttribute("disabled", "disbled");
-            buttonLogin.removeAttribute("disabled", "disbled");
+            //buttonLogin.removeAttribute("disabled", "disbled");
             errorMessageLogin.innerHTML = JSON.parse(xhttpLogin.responseText).LOGIN;
         }
     }
@@ -282,7 +282,7 @@ function userLogin() {
 
 // OK - 30-06
 function newCategory() {
-    let userId = 1;
+    let idInput = sessionStorage.id;
     let categoryName = document.getElementById("form-input-category");
     let divMessage = document.getElementById("message-register-error");
     let buttonForm = document.getElementById('form-button-send');
@@ -293,7 +293,7 @@ function newCategory() {
     const xhttpNewCategory = new XMLHttpRequest();
     xhttpNewCategory.open("POST", "/register/category");
     xhttpNewCategory.setRequestHeader("Content-Type", "application/json");
-    xhttpNewCategory.send(`{"id":"null","user_id":"${userId}","category":"${categoryName.value}","deleted":false}`);
+    xhttpNewCategory.send(JSON.stringify({"id":null,"user_id":idInput,"category":categoryName.value,"deleted":false}));
 
     let xhttpNewCategoryMessageText;
 
@@ -318,7 +318,7 @@ function newCategory() {
 
 
 }
-// OK - 30-06
+// OK - 04-07
 function newCategoryPage() {
     document.getElementById("section").innerHTML = `
     <span id="register-category-head">CADASTRO NOVA CATEGORIA</span>
@@ -343,16 +343,17 @@ function newCategoryPage() {
         </article>
     </div>`;
 }
-// OK - 30-06-21
+// OK - 04-07
 function allCategoryPage() {
-    let user = 1
+    let idInput = sessionStorage.id;
     const xhttpAllCategory = new XMLHttpRequest();
-    xhttpAllCategory.open("GET", `/query/categories/user/${user}`, true);
+    xhttpAllCategory.open("GET", `/query/categories/user/${idInput}`, true);
     xhttpAllCategory.send();
 
     xhttpAllCategory.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             let recListServidor = JSON.parse(this.responseText);
+            sessionStorage = recListServidor[0];
             let element;
             let elementAll = "";
             console.log(recListServidor);
@@ -371,12 +372,12 @@ function allCategoryPage() {
                 </div>
             </div>`;
 
-            for (i = 0; i < recListServidor.length; i++) {
-                element = recListServidor[i];
+            for (i = 0; i < recListServidor[1].length; i++) {
+                element = recListServidor[1][i];
                 elementAll += `
                 <div class="expense-list-dados">
-                    <div class="expense-id">${recListServidor[i].id}</div>
-                    <div class="expense-category">${recListServidor[i].category}</div>
+                    <div class="expense-id">${recListServidor[1][i].id}</div>
+                    <div class="expense-category">${recListServidor[1][i].category}</div>
 
                 </div>`
             }
@@ -390,9 +391,10 @@ function allCategoryPage() {
 }
 
 
-// OK - 30-06
+// OK - 04-07
 function newExpensePage() {
-    let idInput = 1;
+    let idInput = sessionStorage.id;
+    console.log(idInput)
     new Promise((resolve, reject) => {
         console.log("PROMISE NEW EXPENSE")
         const xhttpUpdateUser = new XMLHttpRequest();
@@ -407,7 +409,7 @@ function newExpensePage() {
             if (xhttpUpdateUser.readyState == 4 && xhttpUpdateUser.status == 200) {
                 console.log(JSON.parse(xhttpUpdateUser.responseText));
                 console.log("DADOS RECEBIDOS")
-                resolve(JSON.parse(xhttpUpdateUser.responseText));
+                resolve(JSON.parse(xhttpUpdateUser.responseText)[1]);
 
             } else if (xhttpUpdateUser.readyState == 4 && xhttpUpdateUser.status >= 300) {
                 reject(xhttpUpdateUser.responseText)
@@ -457,9 +459,9 @@ function newExpensePage() {
         //registerFromEnableDisable(0);
     })
 }
-// OK - 30-06
+// OK - 04-07 - verificar
 function newExpense() {
-    let userId = 1;
+    let idInput = sessionStorage.id;
     let dateInput = document.getElementById('form-input-date');
     let dateExpireInput = document.getElementById('form-input-date-expire');
     let categoryInput = document.getElementById('form-input-category');
@@ -508,7 +510,7 @@ function newExpense() {
         xhttpNewExpense.open('POST', '/register/expense');
         xhttpNewExpense.setRequestHeader("Content-Type", "application/json");
 
-        xhttpNewExpense.send(`{"id":null,"date":"${dateInput.value}","date_expire":"${dateExpireInput.value}","user_id":${userId},"category_id":${categoryInput.options[categoryInput.selectedIndex].value},"value":${valueMoney.value}}`);
+        xhttpNewExpense.send(`{"id":null,"date":"${dateInput.value}","date_expire":"${dateExpireInput.value}","user_id":${idInput},"category_id":${categoryInput.options[categoryInput.selectedIndex].value},"value":${valueMoney.value}}`);
     } else if (dateExpireInput.value == "") {
         dateExpireInput.innerHTML = "A DATA NÃO PODE FICAR EM BRANCO";
         registerFromEnableDisable(0);
@@ -521,16 +523,16 @@ function newExpense() {
     }
 
 }
-// OK - 30-06
+// OK - 04-07
 function allExpensePage() {
-    let user = 1
+    let idInput = sessionStorage.id;
     const xhttpAllExpense = new XMLHttpRequest();
-    xhttpAllExpense.open("GET", `/query/expenses/user/${user}`, true);
+    xhttpAllExpense.open("GET", `/query/expenses/user/${idInput}`, true);
     xhttpAllExpense.send();
 
     xhttpAllExpense.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            let recListServidor = JSON.parse(this.responseText);
+            let recListServidor = JSON.parse(this.responseText)[1];
             let element;
             let elementAll = "";
             console.log(recListServidor);
