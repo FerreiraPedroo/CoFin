@@ -19,19 +19,28 @@
     <span>CoFin</span>
     <div id="config"><img src="./data/img/config.jpg" alt="Configurações" onclick="updateUserPage()"></div>
   </header>
-
   <div id="body">
-
     <nav>
       <input type="button" class="nav-button" value="CADASTRAR DESPESAS" onclick="newExpensePage()">
       <input type="button" class="nav-button" value="CONSULTAR DESPESAS" onclick="allExpensePage()">
       <input type="button" class="nav-button" value="CADASTRAR CATEGORIA" onclick="newCategoryPage()">
       <input type="button" class="nav-button" value="CONSULTAR CATEGORIAS" onclick="allCategoryPage()">
     </nav>
-
     <section id="section">
-     
     </section>
+    <div id="logout" class="modal">
+      <span onclick="logoutPage('close')" class="close" title="Close Modal">×</span>
+      <form class="modal-content" action="/action_page.php">
+        <div class="container">
+          <h1>DESLOGADO</h1>
+          <br>
+          <p>Você foi deslogado por inatividade, por favor efetuar o login novamente</p>
+          <div class="clearfix">
+            <button type="button" onclick="window.location.assign(`/index.html`)" class="deletebtn buttonlogout">VOLTAR</button>
+          </div>
+        </div>
+      </form>
+    </div>
 
   </div>
 

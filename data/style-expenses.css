@@ -5,16 +5,7 @@
     color: blue;
     user-select: none;
 }
-.input-head {
-    border: 1px solid blue;
-    background-color: white;
-    border-radius: 3px;
-    height: 24px;
-    margin-left: 24px;
-    margin-bottom: 8px;
-    margin-top: 16px;
-    user-select: none;
-}
+
 
 /* --- CABEÇALHO DE LISTA DE DESPESAS --- */
 #expense-head{
@@ -23,43 +14,61 @@
     justify-content: center;
     user-select: none;
 }
+table {
+    align-self: center;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 70vw;
+    border: 1px solid #ddd;
+}
+th,
+td {
+    padding: 8px;
+}
+td{
+    border-top: 1px solid lightgray;
+}
+tr:nth-child(even) {
+    background-color:silver;
+}
+th{
+    color:white;
+    background-color: black;
+    text-align: left;
+}
+th:first-child,
+td:first-child {
+
+    width: 1%;
+    text-align: left;
+}
+th:nth-child(2),th:nth-child(3),
+td:nth-child(2),td:nth-child(3){
+    text-align: center;
+    width: 10%;
+}
+th:nth-child(4),
+td:nth-child(4){
+    text-align: left;
+}
+th:nth-child(5),
+td:nth-child(5){
+    text-align: center;
+    width: 10%;
+}
+th:last-child,
+td:last-child {
+    width: 15%;
+   text-align: right;
+}
+
+/* --- LISTA DE DESPESAS --- */
 #expense-head-id{
     width: 32px;
     font-family:'Lucida Sans Unicode';
     font-weight: bold;    
     text-align: center;
     color:white;
-    border:1px solid white;
-    background-color: black;
-    user-select: none;
-}
-#expense-head-date{
-    width: 112px;
-    font-family:'Lucida Sans Unicode';
-    font-weight: bold;    
-    text-align: center;
-    color:white;
-    border:1px solid white;
-    background-color: black;
-    user-select: none;
-}
-#expense-head-dateexpire{
-    width: 124px;
-    font-family:'Lucida Sans Unicode';
-    font-weight: bold;    
-    text-align: center;
-    color:white;
-    border:1px solid white;
-    background-color: black;
-    user-select: none;
-}
-#expense-head-user{
-    width: 256px;
-    font-family:'Lucida Sans Unicode';
-    font-weight: bold;
-    text-align: center;
-    color:white;
-    padding-left: 10px;
     border:1px solid white;
     background-color: black;
     user-select: none;
@@ -75,17 +84,6 @@
     background-color:black;
     user-select: none;
 }
-#expense-head-valor{
-    width: 128px;
-    font-family:'Lucida Sans Unicode';
-    font-weight: bold;
-    color:white;
-    text-align: center;
-    border:1px solid white;
-    background-color: black;
-    user-select: none;
-}
-/* --- LISTA DE DESPESAS --- */
 #expense-list{
     display: flex;
     flex-direction: column;

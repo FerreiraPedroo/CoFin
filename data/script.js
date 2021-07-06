@@ -233,7 +233,10 @@ function newUser() {
 
 }
 
-// OK
+// OK - 05-07
+/*
+    Adicionado a função 'sessionModify' para alterar o key da sessão no login.
+*/
 function userLogin() {
     let userLogin = document.getElementById('form-input-user')
     let passwordLogin = document.getElementById('form-input-password')
@@ -247,18 +250,13 @@ function userLogin() {
     errorMessageLogin.innerHTML = `&nbsp`;
 
     xhttpLogin = new XMLHttpRequest();
-    xhttpLogin.onreadystatechange = () => {
+    xhttpLogin.onreadystatechange = async () => {
         console.log("STATE: " + xhttpLogin.readyState)
 
         if (xhttpLogin.readyState == 4 && xhttpLogin.status == 200) {
             let xhttpLoginMessageText = JSON.parse(xhttpLogin.responseText);
-            console.log(xhttpLoginMessageText);
-            sessionStorage.setItem("id", xhttpLoginMessageText.id);
-            sessionStorage.setItem("key", xhttpLoginMessageText.key);
-            sessionStorage.setItem("time", xhttpLoginMessageText.time);
-            console.log(sessionStorage)
-            console.log(sessionStorage.getItem("key"))
-            //location.replace('/painel.html')
+            await sessionModify(xhttpLoginMessageText)
+            window.location.assign(`/painel.html`)
 
         } else if (xhttpLogin.readyState == 4 && xhttpLogin.status >= 300) {
             userLogin.removeAttribute("disabled", "disabled");
@@ -280,7 +278,7 @@ function userLogin() {
 
 
 
-// OK - 30-06
+// OK
 function newCategory() {
     let idInput = sessionStorage.id;
     let categoryName = document.getElementById("form-input-category");
@@ -293,25 +291,25 @@ function newCategory() {
     const xhttpNewCategory = new XMLHttpRequest();
     xhttpNewCategory.open("POST", "/register/category");
     xhttpNewCategory.setRequestHeader("Content-Type", "application/json");
-    xhttpNewCategory.send(JSON.stringify({"id":null,"user_id":idInput,"category":categoryName.value,"deleted":false}));
+    xhttpNewCategory.send(JSON.stringify([{ "id": sessionStorage.getItem('id'), "key": sessionStorage.getItem('key'), "time": sessionStorage.getItem('time') }, { "id": null, "user_id": idInput, "category": categoryName.value, "deleted": false }]));
 
     let xhttpNewCategoryMessageText;
 
-    xhttpNewCategory.onreadystatechange = () => {
+    xhttpNewCategory.onreadystatechange = async () => {
         console.log("STATE: " + xhttpNewCategory.readyState);
         xhttpNewCategory.responseText != "" ? xhttpNewCategoryMessageText = JSON.parse(xhttpNewCategory.responseText) : console.log(xhttpNewCategory.responseText);
         console.log(xhttpNewCategoryMessageText);
 
         if (xhttpNewCategory.readyState == 4 && xhttpNewCategory.status == 200) {
-            console.log(xhttpNewCategoryMessageText)
+            divMessage.innerHTML = xhttpNewCategoryMessageText[1].register;
 
-            divMessage.innerHTML = xhttpNewCategoryMessageText.register;
-
-        } else if (xhttpNewCategory.readyState == 4 && xhttpNewCategory.status >= 300) {
-            //divMessage.innerHTML = xhttpNewCategoryMessageText.register;
-            divMessage.innerHTML = xhttpNewCategoryMessageText.register;
+        } else if (xhttpNewCategory.readyState == 4 && xhttpNewCategory.status >= 300 && xhttpNewCategory.status != 403) {
+            divMessage.innerHTML = xhttpNewCategoryMessageText[1].register;
             categoryName.removeAttribute("disabled", "disbled");
             buttonForm.removeAttribute("disabled", "disbled");
+
+        } else if (xhttpNewCategory.readyState == 4 && xhttpNewCategory.status == 403) {
+            logoutPage('show')
         }
     }
 
@@ -352,17 +350,19 @@ function allCategoryPage() {
 
     xhttpAllCategory.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            let recListServidor = JSON.parse(this.responseText);
-            sessionStorage = recListServidor[0];
+            let recListServidor = JSON.parse(this.responseText)
             let element;
             let elementAll = "";
-            console.log(recListServidor);
+            console.log("DADOS RECEBIDOS")
+            console.log(recListServidor)
+            sessionStorage.setItem("id", recListServidor[0].id);
+            sessionStorage.setItem("key", recListServidor[0].key);
+            sessionStorage.setItem("time", recListServidor[0].time);
+            console.log(sessionStorage)
             document.getElementById("section").innerHTML = `
             <div>
             <div id="register-categoryall-head">CONSULTAR CATEGORIAS</div>
                 <div id="expense-menu-filter">
-                    <input type="text" id="search-category" class="input-head" placeholder="categoria">
-                    <input type="image" class="input-head" src="./data/img/pesquisar.svg" alt="Pesquisar" onclick="">
                 </div>
                 <div id="expense-head">
                     <div id="expense-head-id">ID</div>
@@ -378,41 +378,38 @@ function allCategoryPage() {
                 <div class="expense-list-dados">
                     <div class="expense-id">${recListServidor[1][i].id}</div>
                     <div class="expense-category">${recListServidor[1][i].category}</div>
-
                 </div>`
             }
-
             document.getElementById("section").innerHTML += elementAll;
-
-
+        } else if (xhttpAllCategory.readyState == 4 && xhttpAllCategory.status == 403) {
+            logoutPage('show')
         }
     }
 
 }
 
 
-// OK - 04-07
+// OK
 function newExpensePage() {
     let idInput = sessionStorage.id;
-    console.log(idInput)
+    console.log("usuário ID:", idInput)
     new Promise((resolve, reject) => {
-        console.log("PROMISE NEW EXPENSE")
+        console.log("Página de nova despesa")
         const xhttpUpdateUser = new XMLHttpRequest();
 
         xhttpUpdateUser.open('GET', `/query/categories/user/${idInput}`)
         xhttpUpdateUser.setRequestHeader("Content-Type", "application/json");
         xhttpUpdateUser.send();
 
-        xhttpUpdateUser.onreadystatechange = () => {
+        xhttpUpdateUser.onreadystatechange = async () => {
             console.log("STATE: " + xhttpUpdateUser.readyState)
-
             if (xhttpUpdateUser.readyState == 4 && xhttpUpdateUser.status == 200) {
-                console.log(JSON.parse(xhttpUpdateUser.responseText));
-                console.log("DADOS RECEBIDOS")
-                resolve(JSON.parse(xhttpUpdateUser.responseText)[1]);
+                let receiveMessage = JSON.parse(xhttpUpdateUser.responseText)
+                await sessionModify(receiveMessage[0]);
+                resolve(receiveMessage[1]);
 
             } else if (xhttpUpdateUser.readyState == 4 && xhttpUpdateUser.status >= 300) {
-                reject(xhttpUpdateUser.responseText)
+                reject(xhttpUpdateUser.status)
 
             }
         }
@@ -435,7 +432,7 @@ function newExpensePage() {
                 <input type="text" id="form-input-id" class="register-card-dados" disabled>
                 <input type="text" id="form-input-date" class="register-card-dados" value="${new Date().toLocaleDateString()}" disabled>
                 <input type="date" id="form-input-date-expire" class="register-card-dados" >
-                <select id="form-input-category" name="select">
+                <select id="form-input-category" class="register-card-dados" name="select">
         `
         _listCategory.forEach((value) => {
             newCategoryHtml += `<option value="${value.id}">${value.category}</option>`
@@ -455,11 +452,15 @@ function newExpensePage() {
         document.getElementById("section").innerHTML = newCategoryHtml
 
     }).catch((_errorMessage) => {
-        document.getElementById("section").innerHTML = JSON.parse(_errorMessage);
-        //registerFromEnableDisable(0);
+        if (_errorMessage == 403) {
+            logoutPage('show')
+        } else {
+            console.log(_errorMessage)
+            document.getElementById("section").innerHTML = _errorMessage;
+        }
     })
 }
-// OK - 04-07 - verificar
+// OK
 function newExpense() {
     let idInput = sessionStorage.id;
     let dateInput = document.getElementById('form-input-date');
@@ -468,39 +469,44 @@ function newExpense() {
     let valueMoney = document.getElementById('form-register-input-value');
     let buttonForm = document.getElementById('form-register-button-send');
     let divMessage = document.getElementById("register-message-error");
-    console.log(categoryInput.options[categoryInput.selectedIndex].value);
+    console.log("ID do usuário: ", idInput);
+    console.log("Categoria selecionada: ", categoryInput.options[categoryInput.selectedIndex].value);
 
 
     function registerFromEnableDisable(_code) {
         if (_code == 0) {
-            dateInput.removeAttribute("disabled", "disabled");
+            //dateInput.removeAttribute("disabled", "disabled");
             dateExpireInput.removeAttribute("disabled", "disabled");
             categoryInput.removeAttribute("disabled", "disabled");
             valueMoney.removeAttribute("disabled", "disabled");
-            //buttonForm.removeAttribute("disabled", "disabled");
+            buttonForm.removeAttribute("disabled", "disabled");
         } else if (_code == 1) {
-            dateInput.setAttribute("disabled", "disabled");
+            //dateInput.setAttribute("disabled", "disabled");
             dateExpireInput.setAttribute("disabled", "disabled");
             categoryInput.setAttribute("disabled", "disabled");
             valueMoney.setAttribute("disabled", "disabled");
-            //buttonForm.setAttribute("disabled", "disabled");
+            buttonForm.setAttribute("disabled", "disabled");
         }
     }
 
     let xhttpNewExpenseMessageText;
 
     const xhttpNewExpense = new XMLHttpRequest();
-    xhttpNewExpense.onreadystatechange = () => {
+    xhttpNewExpense.onreadystatechange = async () => {
         console.log("STATE: " + xhttpNewExpense.readyState);
         xhttpNewExpense.responseText != "" ? xhttpNewExpenseMessageText = JSON.parse(xhttpNewExpense.responseText) : "";
         console.log(xhttpNewExpenseMessageText);
 
         if (xhttpNewExpense.readyState == 4 && xhttpNewExpense.status == 200) {
-            divMessage.innerHTML = xhttpNewExpenseMessageText.register;
-            //registerFromEnableDisable(0);
-        } else if (xhttpNewExpense.readyState == 4 && xhttpNewExpense.status >= 300) {
+            divMessage.innerHTML = "DESPESA CADASTRADA";
+            await sessionModify(xhttpNewExpenseMessageText)
+            registerFromEnableDisable(0);
+
+        } else if (xhttpNewExpense.readyState == 4 && xhttpNewExpense.status >= 300 && xhttpNewExpense.status != 403) {
             divMessage.innerHTML = xhttpNewExpenseMessageText.register;
             registerFromEnableDisable(0);
+        } else if (xhttpNewExpense.readyState == 4 && xhttpNewExpense.status == 403) {
+            logoutPage('show')
         }
     }
 
@@ -510,7 +516,7 @@ function newExpense() {
         xhttpNewExpense.open('POST', '/register/expense');
         xhttpNewExpense.setRequestHeader("Content-Type", "application/json");
 
-        xhttpNewExpense.send(`{"id":null,"date":"${dateInput.value}","date_expire":"${dateExpireInput.value}","user_id":${idInput},"category_id":${categoryInput.options[categoryInput.selectedIndex].value},"value":${valueMoney.value}}`);
+        xhttpNewExpense.send(`[{"id":${sessionStorage.getItem('id')},"key":${sessionStorage.getItem('key')},"time":${sessionStorage.getItem('time')} },{"id":null,"date":"${dateInput.value}","date_expire":"${dateExpireInput.value}","user_id":${idInput},"category_id":${categoryInput.options[categoryInput.selectedIndex].value},"value":${valueMoney.value}}]`);
     } else if (dateExpireInput.value == "") {
         dateExpireInput.innerHTML = "A DATA NÃO PODE FICAR EM BRANCO";
         registerFromEnableDisable(0);
@@ -523,7 +529,7 @@ function newExpense() {
     }
 
 }
-// OK - 04-07
+// OK
 function allExpensePage() {
     let idInput = sessionStorage.id;
     const xhttpAllExpense = new XMLHttpRequest();
@@ -531,49 +537,54 @@ function allExpensePage() {
     xhttpAllExpense.send();
 
     xhttpAllExpense.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
+        if (xhttpAllExpense.readyState == 4 && xhttpAllExpense.status == 200) {
             let recListServidor = JSON.parse(this.responseText)[1];
             let element;
             let elementAll = "";
             console.log(recListServidor);
 
-            document.getElementById("section").innerHTML = `
-            <div>
+            elementAll = `
             <div id="register-categoryall-head">CONSULTAR DESPESAS</div>
                 <div id="expense-menu-filter">
-                    <input type="text" id="search-user" class="input-head" placeholder="usuario">
-                    <input type="text" id="search-category" class="input-head" placeholder="categoria">
-                    <input type="image" class="input-head" src="./data/img/pesquisar.svg" alt="Pesquisar" onclick="">
-                </div>
-                <div id="expense-head">
-                    <div id="expense-head-id">ID</div>
-                    <div id="expense-head-date">DATA LANÇAMENTO</div>
-                    <div id="expense-head-dateexpire">DATA VENCIMENTO</div>
-                    <div id="expense-head-user">USUARIO</div>
-                    <div id="expense-head-category">CATEGORIA</div>
-                    <div id="expense-head-valor">VALOR R$</div>
                 </div>
                 <div id="expense-list">
-                </div>
-            </div>`;
+                <table>
+                <tr>
+                    <th id="table-id">ID</th>
+                    <th id="table-date">LANÇAMENTO</th>
+                    <th id="table-date_expire">VENCIMENTO</th>
+                    <th id="table-description">DESCRIÇÃO</th>
+                    <th id="table-category">CATEGORIA</th>
+                    <th id="table-value">VALOR</th>
+                </tr>`;
 
             for (i = 0; i < recListServidor.length; i++) {
                 element = recListServidor[i];
                 elementAll += `
-                <div class="expense-list-dados">
-                    <div class="expense-id">${recListServidor[i].id}</div>
-                    <div class="expense-date">${recListServidor[i].date}</div>
-                    <div class="expense-dateexpire">${recListServidor[i].date_expire}</div>
-                    <div class="expense-user">${recListServidor[i].user_id}</div>
-                    <div class="expense-category">${recListServidor[i].category_id}</div>
-                    <div class="expense-value">R$ ${recListServidor[i].value}</div>
-                </div>`
+                <tr>
+                    <td id="table-id-${recListServidor[i].id}">${recListServidor[i].id}</td>
+                    <td id="table-date-${recListServidor[i].id}">${recListServidor[i].date}</td>
+                    <td id="table-date_expire-${recListServidor[i].id}">${recListServidor[i].date_expire}</td>
+                    <td id="table-description-${recListServidor[i].id}"> ------------------ </td>
+                    <td id="table-category-${recListServidor[i].id}">${recListServidor[i].category_id}</td>
+                    <td id="table-value-${recListServidor[i].id}">R$ ${recListServidor[i].value}</td>
+                </tr>`
             }
-
+            elementAll += `</table></div>`;
+            document.getElementById("section").innerHTML = "";
             document.getElementById("section").innerHTML += elementAll;
+        } else if (xhttpAllExpense.readyState == 4 && xhttpAllExpense.status == 403) {
+            logoutPage('show')
         }
     }
 }
+
+
+
+
+
+
+
 
 
 // CIFRA DE CESAR
@@ -604,4 +615,25 @@ function caesarChiper() {
         }
     }
 
+}
+/*
+    Função que exibe a página de logout.
+*/
+function logoutPage(_status) {
+    if (_status == 'show') {
+        document.getElementById('logout').style.display = 'block';
+    } else if (_status == 'close') {
+        document.getElementById('logout').style.display = 'none';
+    }
+}
+/*
+    Toda solicitação que retornar uma nova 'key' e 'time' da sessão esta função faz a alteração.
+*/
+function sessionModify(_session) {
+    console.log("SESSÃO RECEBIDA")
+    sessionStorage.setItem("id", _session.id);
+    sessionStorage.setItem("key", _session.key);
+    sessionStorage.setItem("time", _session.time);
+    console.log(_session)
+    console.table(sessionStorage)
 }
