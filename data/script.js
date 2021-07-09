@@ -516,7 +516,7 @@ function newExpense() {
         xhttpNewExpense.open('POST', '/register/expense');
         xhttpNewExpense.setRequestHeader("Content-Type", "application/json");
 
-        xhttpNewExpense.send(`[{"id":${sessionStorage.getItem('id')},"key":${sessionStorage.getItem('key')},"time":${sessionStorage.getItem('time')} },{"id":null,"date":"${dateInput.value}","date_expire":"${dateExpireInput.value}","user_id":${idInput},"category_id":${categoryInput.options[categoryInput.selectedIndex].value},"value":${valueMoney.value}}]`);
+        xhttpNewExpense.send(`[{"id":${sessionStorage.getItem('id')},"key":${sessionStorage.getItem('key')},"time":${sessionStorage.getItem('time')} },{"id":null,"date":"${dateInput.value}","date_expire":"${dateExpireInput.value}","user_id":${idInput},"description":"${null}","category_id":${categoryInput.options[categoryInput.selectedIndex].value},"value":${valueMoney.value},"deleted":${false}}]`);
     } else if (dateExpireInput.value == "") {
         dateExpireInput.innerHTML = "A DATA NÃO PODE FICAR EM BRANCO";
         registerFromEnableDisable(0);
@@ -538,9 +538,11 @@ function allExpensePage() {
 
     xhttpAllExpense.onreadystatechange = function () {
         if (xhttpAllExpense.readyState == 4 && xhttpAllExpense.status == 200) {
-            let recListServidor = JSON.parse(this.responseText)[1];
+
+            let recListServidor = JSON.parse(xhttpAllExpense.responseText)[1];
             let element;
             let elementAll = "";
+            console.log("recListServidor");
             console.log(recListServidor);
 
             elementAll = `
@@ -556,18 +558,22 @@ function allExpensePage() {
                     <th id="table-description">DESCRIÇÃO</th>
                     <th id="table-category">CATEGORIA</th>
                     <th id="table-value">VALOR</th>
+                    <th></th>
+                    <th></th>
                 </tr>`;
 
             for (i = 0; i < recListServidor.length; i++) {
                 element = recListServidor[i];
                 elementAll += `
                 <tr>
-                    <td id="table-id-${recListServidor[i].id}">${recListServidor[i].id}</td>
-                    <td id="table-date-${recListServidor[i].id}">${recListServidor[i].date}</td>
-                    <td id="table-date_expire-${recListServidor[i].id}">${recListServidor[i].date_expire}</td>
-                    <td id="table-description-${recListServidor[i].id}"> ------------------ </td>
-                    <td id="table-category-${recListServidor[i].id}">${recListServidor[i].category_id}</td>
-                    <td id="table-value-${recListServidor[i].id}">R$ ${recListServidor[i].value}</td>
+                    <td>${recListServidor[i].id}</td>
+                    <td>${recListServidor[i].date}</td>
+                    <td>${recListServidor[i].date_expire}</td>
+                    <td>${recListServidor[i].description}</td>
+                    <td>${recListServidor[i].category_id}</td>
+                    <td>R$ ${recListServidor[i].value}</td>
+                    <td><button onclick="expenseChange(${recListServidor[i].id})">Alterar</button></td>
+                    <td><button onclick="expenseDelete(${recListServidor[i].id})">Excluir</button></td>
                 </tr>`
             }
             elementAll += `</table></div>`;

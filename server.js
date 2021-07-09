@@ -91,7 +91,6 @@ function userCheck(_user, _type = 'check') {
     let userVerific = _user;
     let typeVerific = _type;
 
-
     return new Promise(async (resolve, reject) => {
         try {
             let usersLoged = await readFile(PATH_DIR, 'loged.json');
@@ -219,7 +218,7 @@ function userCheck(_user, _type = 'check') {
                             resolve(userLoginChecked)
                         })
                         .catch((_err) => {
-                            console.log("| 2 ERRO: " + _err);
+                            console.log("| ERRO: " + _err);
                             reject(false)
                         })
                 }
@@ -558,8 +557,8 @@ app.post('/register/user', function (req, res) {
 // LOGIN DO USUÁRIO - OK
 app.post('/login', async function (req, res) {
     let autentication = req.body;
-    let loginValidate = -1;
-    let registerLogedUser = -1;
+    let loginValidate;
+    let registerLogedUser;
 
     console.log("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|");
     console.log("| SOLICITAÇÃO DE LOGIN                        |");
@@ -572,7 +571,6 @@ app.post('/login', async function (req, res) {
         console.log("| Usuário registrado : ", registerLogedUser);
     } catch (error) {
         console.log("| Erro: Erro ao efetuar o login");
-
     }
 
     if (typeof loginValidate == 'object' && typeof registerLogedUser == 'object') {
@@ -680,7 +678,6 @@ app.post('/register/expense', function (req, res) {
                         expenseRegister.id = 1;
                     } else {
                         expenseRegister.id = expensesList[expensesList.length - 1].id + 1;
-                        expenseRegister.deleted = false;
                     }
                     expensesList.push(expenseRegister);
                     resolve([checkValidateDados, expensesList]);

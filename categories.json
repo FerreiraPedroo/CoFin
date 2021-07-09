@@ -1,1 +1,1 @@
-[{"category":"Alimentação","id":1,"user_id":0,"deleted":false},{"category":"Educação","id":2,"user_id":0,"deleted":false},{"category":"Lazer","id":3,"user_id":0,"deleted":false},{"id":4,"user_id":"1","category":"Pedro","deleted":false}]
+[{"category":"Alimentação","id":1,"user_id":0,"deleted":false},{"category":"Educação","id":2,"user_id":0,"deleted":false},{"category":"Lazer","id":3,"user_id":0,"deleted":false},{"id":4,"user_id":"1","category":"Pedro","deleted":false},{"id":5,"user_id":"1","category":"Hobby","deleted":false}]
